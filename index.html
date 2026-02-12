@@ -18,7 +18,7 @@
         Ввод внедряется в условие без экранирования и выполняется через <code>eval</code>.
       </p>
       <div class="row">
-        <input id="loginUser" placeholder="username" value="admin" />
+        <input id="loginUser" placeholder="username" value="user" />
         <input id="loginPass" placeholder="password" type="password" />
         <button id="loginBtn">Войти</button>
       </div>
@@ -28,7 +28,7 @@
 
     <section class="card">
       <h2>2) DOM XSS</h2>
-      <p>Комментарий вставляется через <code>innerHTML</code> без фильтрации.</p>
+      <p>Комментарий вставляется через <code>innerHTML</code> и проходит только слабую blacklist-фильтрацию.</p>
       <div class="row">
         <input id="commentInput" placeholder="Оставь комментарий" />
         <button id="commentBtn">Добавить</button>
@@ -39,7 +39,7 @@
     <section class="card">
       <h2>3) Client-side auth bypass</h2>
       <p>
-        Доступ к "админке" проверяется только по <code>localStorage.role</code>.
+        Доступ к "админке" проверяется только по объекту сессии в <code>localStorage.sessionData</code>.
         Это можно подменить через встроенную консоль ниже (без DevTools).
       </p>
       <div class="row">
@@ -52,10 +52,22 @@
     </section>
 
     <section class="card">
+      <h2>4*) IDOR (задача со звездочкой)</h2>
+      <p>
+        Просмотр заявок должен быть только для владельца, но проверка прав доступа реализована неверно.
+      </p>
+      <div class="row">
+        <input id="orderIdInput" placeholder="ID заявки (пример: ORD-1001)" value="ORD-1001" />
+        <button id="viewOrderBtn">Открыть заявку</button>
+      </div>
+      <pre id="orderResult" class="code"></pre>
+    </section>
+
+    <section class="card">
       <h2>Встроенная консоль браузера</h2>
       <p>Мини-консоль для выполнения JS-команд прямо в странице.</p>
       <div class="row">
-        <input id="consoleInput" placeholder="Например: localStorage.setItem('role','admin')" />
+        <input id="consoleInput" placeholder="Введи JS-команду" />
         <button id="consoleRunBtn">Выполнить</button>
         <button id="consoleClearBtn">Очистить вывод</button>
       </div>
@@ -63,11 +75,12 @@
     </section>
 
     <section class="card">
-      <h2>Примеры атак (для практики)</h2>
+      <h2>Подсказки (без готовых payload)</h2>
       <ol>
-        <li>SQLi bypass пароля: в поле пароля введи <code>' || true || '</code></li>
-        <li>XSS payload: <code>&lt;img src=x onerror=alert('XSS')&gt;</code></li>
-        <li>Bypass роли: во встроенной консоли выполни <code>localStorage.setItem('role','admin')</code> и нажми "Открыть админ-панель"</li>
+        <li>SQLi: подумай, как закрыть кавычку и добавить свое логическое условие.</li>
+        <li>XSS: фильтрация режет не все теги, особенно если использовать события элементов.</li>
+        <li>Bypass роли: нужное поле роли лежит внутри JSON в <code>localStorage</code>, а не отдельным ключом.</li>
+        <li>4* IDOR: зайди под обычным пользователем и попробуй читать не свои заявки, меняя только ID.</li>
       </ol>
     </section>
   </main>

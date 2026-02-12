@@ -1,0 +1,77 @@
+﻿<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VulnLab Local</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="container">
+    <h1>VulnLab (offline)</h1>
+    <p class="muted">Тренировочный сайт с намеренно уязвимой логикой. Открывай <code>index.html</code> напрямую, сервер не нужен.</p>
+
+    <section class="card">
+      <h2>1) SQL Injection (симуляция)</h2>
+      <p>
+        Логин использует уязвимую проверку в стиле SQL: <code>username == '...' && password == '...'</code>.
+        Ввод внедряется в условие без экранирования и выполняется через <code>eval</code>.
+      </p>
+      <div class="row">
+        <input id="loginUser" placeholder="username" value="admin" />
+        <input id="loginPass" placeholder="password" type="password" />
+        <button id="loginBtn">Войти</button>
+      </div>
+      <pre id="sqlPreview" class="code"></pre>
+      <div id="loginResult" class="result"></div>
+    </section>
+
+    <section class="card">
+      <h2>2) DOM XSS</h2>
+      <p>Комментарий вставляется через <code>innerHTML</code> без фильтрации.</p>
+      <div class="row">
+        <input id="commentInput" placeholder="Оставь комментарий" />
+        <button id="commentBtn">Добавить</button>
+      </div>
+      <div id="comments" class="comments"></div>
+    </section>
+
+    <section class="card">
+      <h2>3) Client-side auth bypass</h2>
+      <p>
+        Доступ к "админке" проверяется только по <code>localStorage.role</code>.
+        Это можно подменить через встроенную консоль ниже (без DevTools).
+      </p>
+      <div class="row">
+        <button id="openAdminBtn">Открыть админ-панель</button>
+        <button id="logoutBtn">Сбросить роль</button>
+      </div>
+      <div id="adminPanel" class="admin hidden">
+        <strong>Admin panel:</strong> Секретные данные: <code>FLAG{local-demo-only}</code>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Встроенная консоль браузера</h2>
+      <p>Мини-консоль для выполнения JS-команд прямо в странице.</p>
+      <div class="row">
+        <input id="consoleInput" placeholder="Например: localStorage.setItem('role','admin')" />
+        <button id="consoleRunBtn">Выполнить</button>
+        <button id="consoleClearBtn">Очистить вывод</button>
+      </div>
+      <pre id="consoleOutput" class="console-output"></pre>
+    </section>
+
+    <section class="card">
+      <h2>Примеры атак (для практики)</h2>
+      <ol>
+        <li>SQLi bypass пароля: в поле пароля введи <code>' || true || '</code></li>
+        <li>XSS payload: <code>&lt;img src=x onerror=alert('XSS')&gt;</code></li>
+        <li>Bypass роли: во встроенной консоли выполни <code>localStorage.setItem('role','admin')</code> и нажми "Открыть админ-панель"</li>
+      </ol>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

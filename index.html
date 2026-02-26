@@ -64,6 +64,56 @@
     </section>
 
     <section class="card">
+      <h2>5) Reflected DOM XSS (hash)</h2>
+      <p>
+        Баннер читает значение из <code>location.hash</code> и вставляет его в DOM через
+        <code>innerHTML</code>.
+      </p>
+      <div class="row">
+        <input id="noticeInput" placeholder="Текст баннера для #notice=" />
+        <button id="applyNoticeBtn">Записать в hash</button>
+      </div>
+      <div id="noticeBanner" class="code"></div>
+    </section>
+
+    <section class="card">
+      <h2>6) Mass Assignment (JSON import)</h2>
+      <p>
+        Импорт профиля применяет JSON-объект к сессии через <code>Object.assign</code> без whitelist полей.
+      </p>
+      <textarea id="profileJsonInput" rows="4" placeholder='{"nickname":"student"}'>{"nickname":"student"}</textarea>
+      <div class="row">
+        <button id="importProfileBtn">Импортировать профиль</button>
+      </div>
+      <pre id="profileImportResult" class="code"></pre>
+    </section>
+
+    <section class="card">
+      <h2>7) Path Traversal (симуляция)</h2>
+      <p>
+        Просмотрщик шаблонов читает виртуальные файлы. Защита от <code>../</code> проверяет путь до декодирования.
+      </p>
+      <div class="row">
+        <input id="filePathInput" placeholder="templates/welcome.txt" value="templates/welcome.txt" />
+        <button id="readFileBtn">Открыть шаблон</button>
+      </div>
+      <pre id="fileReadResult" class="code"></pre>
+    </section>
+
+    <section class="card">
+      <h2>8*) Prototype Pollution (deep merge)</h2>
+      <p>
+        JSON настроек сливается кастомной рекурсивной функцией. Проверка не фильтрует служебные ключи.
+      </p>
+      <textarea id="settingsJsonInput" rows="4" placeholder='{"theme":{"accent":"lime"}}'>{"theme":{"accent":"lime"}}</textarea>
+      <div class="row">
+        <button id="applySettingsBtn">Применить настройки</button>
+        <button id="checkPollutionBtn">Проверить эффект</button>
+      </div>
+      <pre id="settingsResult" class="code"></pre>
+    </section>
+
+    <section class="card">
       <h2>Встроенная консоль браузера</h2>
       <p>Мини-консоль для выполнения JS-команд прямо в странице.</p>
       <div class="row">
@@ -76,12 +126,90 @@
 
     <section class="card">
       <h2>Подсказки (без готовых payload)</h2>
-      <ol>
-        <li>SQLi: подумай, как закрыть кавычку и добавить свое логическое условие.</li>
-        <li>XSS: фильтрация режет не все теги, особенно если использовать события элементов.</li>
-        <li>Bypass роли: нужное поле роли лежит внутри JSON в <code>localStorage</code>, а не отдельным ключом.</li>
-        <li>4* IDOR: зайди под обычным пользователем и попробуй читать не свои заявки, меняя только ID.</li>
-      </ol>
+      <p class="muted">
+        Формат для работы: сначала наблюдай поведение, потом меняй один параметр за раз, фиксируй что изменилось в
+        выводе/баннере/результате.
+      </p>
+
+      <details class="hint" open>
+        <summary>1) SQL Injection (симуляция)</summary>
+        <ol>
+          <li>Смотри на строку в <code>sqlPreview</code>: она показывает итоговое условие после подстановки ввода.</li>
+          <li>Цель: сделать итоговое выражение истинным без знания реального пароля.</li>
+          <li>Подумай про закрытие кавычки и добавление логического выражения через <code>||</code> или аналог.</li>
+          <li>Признак успеха: логин проходит и создается <code>sessionData</code> в <code>localStorage</code>.</li>
+        </ol>
+      </details>
+
+      <details class="hint">
+        <summary>2) DOM XSS (комментарии)</summary>
+        <ol>
+          <li>Проверь, какие теги/строки режутся фильтром, а какие проходят без изменений.</li>
+          <li>Фильтр ориентирован на один конкретный тег, а не на события HTML-элементов.</li>
+          <li>Ищи элемент, который может выполнить JS через атрибут события.</li>
+          <li>Признак успеха: код выполняется при вставке комментария.</li>
+        </ol>
+      </details>
+
+      <details class="hint">
+        <summary>3) Client-side auth bypass</summary>
+        <ol>
+          <li>Открой встроенную консоль и посмотри содержимое <code>localStorage</code>.</li>
+          <li>Роль хранится внутри JSON, значит нужно читать/изменять не отдельный ключ роли, а объект сессии.</li>
+          <li>Измени значение роли и сохрани объект обратно в том же формате.</li>
+          <li>Признак успеха: кнопка открытия админки начинает работать без настоящего админ-логина.</li>
+        </ol>
+      </details>
+
+      <details class="hint">
+        <summary>4*) IDOR (заявки)</summary>
+        <ol>
+          <li>Сначала открой заявку своего пользователя и запомни формат идентификатора.</li>
+          <li>Потом меняй только ID (без смены сессии) и смотри, проверяется ли владелец.</li>
+          <li>Обрати внимание на последовательность/диапазон ID в примерах.</li>
+          <li>Признак успеха: видишь заявку с другим <code>Owner</code>.</li>
+        </ol>
+      </details>
+
+      <details class="hint">
+        <summary>5) Reflected DOM XSS (hash)</summary>
+        <ol>
+          <li>Нажми кнопку записи в hash и посмотри, как меняется URL после <code>#notice=</code>.</li>
+          <li>Значение проходит через URL-кодирование/декодирование, это важно для спецсимволов.</li>
+          <li>Подумай, что будет, если после декодирования там окажется HTML с событием.</li>
+          <li>Признак успеха: баннер рендерит/выполняет внедренный фрагмент.</li>
+        </ol>
+      </details>
+
+      <details class="hint">
+        <summary>6) Mass Assignment (JSON import)</summary>
+        <ol>
+          <li>Импорт принимает произвольный JSON и смешивает его с текущей сессией.</li>
+          <li>Сначала импортируй безопасное поле и посмотри, как меняется вывод <code>sessionData</code>.</li>
+          <li>Потом добавь поле, которое обычно не должно изменяться пользователем (например, право/служебный флаг).</li>
+          <li>Признак успеха: в сессии появляется/меняется поле, которого не было в форме UI.</li>
+        </ol>
+      </details>
+
+      <details class="hint">
+        <summary>7) Path Traversal (симуляция)</summary>
+        <ol>
+          <li>Сначала проверь обычный путь внутри <code>templates/</code>, чтобы понять формат вывода.</li>
+          <li>Защита проверяет путь до декодирования, значит подумай про URL-encoded вариант спецпоследовательности.</li>
+          <li>Смотри поля <code>Raw / Decoded / Resolved</code> и подбирай ввод так, чтобы выйти из <code>templates/</code>.</li>
+          <li>Признак успеха: читается файл из другого каталога (например, <code>secrets/...</code>).</li>
+        </ol>
+      </details>
+
+      <details class="hint">
+        <summary>8*) Prototype Pollution (deep merge)</summary>
+        <ol>
+          <li>Функция делает рекурсивный merge объектов без фильтра ключей.</li>
+          <li>Подумай про специальные ключи JavaScript-объектов, которые могут затронуть прототип.</li>
+          <li>После импорта жми кнопку проверки и смотри строку про <code>trainerMode on empty object</code>.</li>
+          <li>Признак успеха: у пустого объекта появляется свойство, которое ты не задавал напрямую.</li>
+        </ol>
+      </details>
     </section>
   </main>
 

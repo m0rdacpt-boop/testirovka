@@ -4,9 +4,9 @@
 ];
 
 const orders = [
-  { id: "ORD-1001", owner: "user", item: "Keyboard", note: "Public replacement request" },
-  { id: "ORD-2042", owner: "admin", item: "Server access card", note: "Do not expose" },
-  { id: "ORD-3007", owner: "user", item: "Mouse", note: "Low priority" }
+  { id: crypto.randomUUID(), owner: "user", item: "Keyboard", note: "Public replacement request" },
+  { id: crypto.randomUUID(), owner: "admin", item: "Server access card", note: "Do not expose" },
+  { id: crypto.randomUUID(), owner: "user", item: "Mouse", note: "Low priority" }
 ];
 
 const loginUser = document.getElementById("loginUser");

@@ -40,23 +40,16 @@ function getSession() {
   }
 }
 
-function unsafeLogin(usernameInput, passwordInput) {
-  const whereClause =
-    `username == '${usernameInput}' && password == '${passwordInput}' && isActive == true`;
-  sqlPreview.textContent = `SELECT * FROM users WHERE ${whereClause}`;
-
+function safeLogin(usernameInput, passwordInput) {
+  // Простое сравнение свойств объекта с переменными
   const found = users.find((u) => {
-    const username = u.username;
-    const password = u.password;
-    const isActive = u.isActive;
-
-    // INTENTIONALLY VULNERABLE: evaluates injected expression
-    return eval(whereClause);
+    return u.username === usernameInput && 
+           u.password === passwordInput && 
+           u.isActive === true;
   });
 
   return found || null;
 }
-
 loginBtn.addEventListener("click", () => {
   try {
     const user = unsafeLogin(loginUser.value, loginPass.value);
@@ -80,13 +73,16 @@ loginBtn.addEventListener("click", () => {
 
 commentBtn.addEventListener("click", () => {
   const text = commentInput.value;
-  const weakSanitized = text.replace(/<script/gi, "&lt;script");
 
-  // INTENTIONALLY VULNERABLE: weak blacklist + direct HTML injection
-  comments.innerHTML += `<div class="comment">${weakSanitized}</div>`;
+  const newComment = document.createElement("div");
+  newComment.className = "comment";
+  
+  // Ключевое изменение: используем textContent вместо innerHTML
+  newComment.textContent = text; 
+
+  comments.appendChild(newComment);
   commentInput.value = "";
 });
-
 openAdminBtn.addEventListener("click", () => {
   // INTENTIONALLY VULNERABLE: client-only auth check
   const role = getSession().role;

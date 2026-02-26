@@ -135,3 +135,26 @@ button {
   padding: 10px;
   color: #c7f9cc;
 }
+
+.hint {
+  margin-top: 10px;
+  border: 1px solid #304274;
+  border-radius: 8px;
+  background: #0a1227;
+  padding: 8px 10px;
+}
+
+.hint summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: #dbeafe;
+}
+
+.hint ol {
+  margin: 10px 0 0 20px;
+  color: var(--muted);
+}
+
+.hint li {
+  margin: 6px 0;
+}

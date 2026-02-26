@@ -60,6 +60,18 @@ input {
   color: var(--text);
 }
 
+textarea {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #384a7a;
+  background: #0f1730;
+  color: var(--text);
+  resize: vertical;
+  font-family: inherit;
+}
+
 button {
   cursor: pointer;
   color: #111827;

@@ -64,6 +64,56 @@
     </section>
 
     <section class="card">
+      <h2>5) Reflected DOM XSS (hash)</h2>
+      <p>
+        Баннер читает значение из <code>location.hash</code> и вставляет его в DOM через
+        <code>innerHTML</code>.
+      </p>
+      <div class="row">
+        <input id="noticeInput" placeholder="Текст баннера для #notice=" />
+        <button id="applyNoticeBtn">Записать в hash</button>
+      </div>
+      <div id="noticeBanner" class="code"></div>
+    </section>
+
+    <section class="card">
+      <h2>6) Mass Assignment (JSON import)</h2>
+      <p>
+        Импорт профиля применяет JSON-объект к сессии через <code>Object.assign</code> без whitelist полей.
+      </p>
+      <textarea id="profileJsonInput" rows="4" placeholder='{"nickname":"student"}'>{"nickname":"student"}</textarea>
+      <div class="row">
+        <button id="importProfileBtn">Импортировать профиль</button>
+      </div>
+      <pre id="profileImportResult" class="code"></pre>
+    </section>
+
+    <section class="card">
+      <h2>7) Path Traversal (симуляция)</h2>
+      <p>
+        Просмотрщик шаблонов читает виртуальные файлы. Защита от <code>../</code> проверяет путь до декодирования.
+      </p>
+      <div class="row">
+        <input id="filePathInput" placeholder="templates/welcome.txt" value="templates/welcome.txt" />
+        <button id="readFileBtn">Открыть шаблон</button>
+      </div>
+      <pre id="fileReadResult" class="code"></pre>
+    </section>
+
+    <section class="card">
+      <h2>8*) Prototype Pollution (deep merge)</h2>
+      <p>
+        JSON настроек сливается кастомной рекурсивной функцией. Проверка не фильтрует служебные ключи.
+      </p>
+      <textarea id="settingsJsonInput" rows="4" placeholder='{"theme":{"accent":"lime"}}'>{"theme":{"accent":"lime"}}</textarea>
+      <div class="row">
+        <button id="applySettingsBtn">Применить настройки</button>
+        <button id="checkPollutionBtn">Проверить эффект</button>
+      </div>
+      <pre id="settingsResult" class="code"></pre>
+    </section>
+
+    <section class="card">
       <h2>Встроенная консоль браузера</h2>
       <p>Мини-консоль для выполнения JS-команд прямо в странице.</p>
       <div class="row">
@@ -81,6 +131,10 @@
         <li>XSS: фильтрация режет не все теги, особенно если использовать события элементов.</li>
         <li>Bypass роли: нужное поле роли лежит внутри JSON в <code>localStorage</code>, а не отдельным ключом.</li>
         <li>4* IDOR: зайди под обычным пользователем и попробуй читать не свои заявки, меняя только ID.</li>
+        <li>5) Hash XSS: посмотри, что происходит со значением после <code>#notice=</code>.</li>
+        <li>6) Mass Assignment: импорт профиля принимает любые поля, не только отображаемые.</li>
+        <li>7) Traversal: проверка ищет <code>../</code> до декодирования пути.</li>
+        <li>8*) Prototype Pollution: поищи служебный ключ, который влияет на прототипы объектов.</li>
       </ol>
     </section>
   </main>
